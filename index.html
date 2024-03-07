@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenStreetMap Events Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        width: 100%;
+        height: calc(
+          100% - 50px
+        ); /* 地圖高度減去50px，使得篩選器的高度為50px */
+      }
+
+      .filters {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #f1f1f1;
+        padding: 10px;
+        box-sizing: border-box;
+        z-index: 1000; /* 確保篩選器位於最上層 */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="filters">
+      <label for="region">地區:</label>
+      <select id="region">
+        <option value="">全區</option>
+        <option value="桃園區">桃園區</option>
+        <option value="龜山區">龜山區</option>
+        <option value="中壢區">中壢區</option>
+      </select>
+
+      <label for="event">事件:</label>
+      <select id="event">
+        <option value="">全部事件</option>
+        <option value="事件1">事件1</option>
+        <option value="事件2">事件2</option>
+        <option value="事件3">事件3</option>
+        <option value="事件4">事件4</option>
+        <!-- Add more events as needed -->
+      </select>
+
+      <label for="date">日期範圍:</label>
+      <input type="date" id="startDate" />
+      <input type="date" id="endDate" />
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      // Sample events data
+      var eventsData = [
+        {
+          name: '事件1',
+          event: '事件1',
+          region: '桃園區',
+          lat: 24.9889,
+          lng: 121.3113,
+          date: '2024-03-01',
+        },
+        {
+          name: '事件2',
+          event: '事件2',
+          region: '龜山區',
+          lat: 24.9937,
+          lng: 121.2967,
+          date: '2024-03-02',
+        },
+        {
+          name: '事件3',
+          event: '事件3',
+          region: '中壢區',
+          lat: 24.9539,
+          lng: 121.2251,
+          date: '2024-03-03',
+        },
+        {
+          name: '事件4',
+          event: '事件4',
+          region: '桃園區',
+          lat: 24.9835,
+          lng: 121.3,
+          date: '2024-03-04',
+        },
+        {
+          name: '事件1',
+          event: '事件1',
+          region: '龜山區',
+          lat: 24.9865,
+          lng: 121.3086,
+          date: '2024-03-05',
+        },
+        {
+          name: '事件2',
+          event: '事件2',
+          region: '中壢區',
+          lat: 24.9593,
+          lng: 121.2056,
+          date: '2024-03-06',
+        },
+        {
+          name: '事件3',
+          event: '事件3',
+          region: '桃園區',
+          lat: 24.9785,
+          lng: 121.2561,
+          date: '2024-03-07',
+        },
+        {
+          name: '事件4',
+          event: '事件4',
+          region: '龜山區',
+          lat: 24.9922,
+          lng: 121.2766,
+          date: '2024-03-08',
+        },
+        {
+          name: '事件1',
+          event: '事件1',
+          region: '中壢區',
+          lat: 24.9534,
+          lng: 121.2311,
+          date: '2024-03-09',
+        },
+        {
+          name: '事件2',
+          event: '事件2',
+          region: '桃園區',
+          lat: 24.9918,
+          lng: 121.3015,
+          date: '2024-03-10',
+        },
+        {
+          name: '事件3',
+          event: '事件3',
+          region: '桃園區',
+          lat: 24.9843,
+          lng: 121.3021,
+          date: '2024-03-11',
+        },
+        {
+          name: '事件4',
+          event: '事件4',
+          region: '龜山區',
+          lat: 24.9956,
+          lng: 121.2943,
+          date: '2024-03-12',
+        },
+        {
+          name: '事件1',
+          event: '事件1',
+          region: '中壢區',
+          lat: 24.9578,
+          lng: 121.2269,
+          date: '2024-03-13',
+        },
+        {
+          name: '事件2',
+          event: '事件2',
+          region: '桃園區',
+          lat: 24.9821,
+          lng: 121.3104,
+          date: '2024-03-14',
+        },
+        {
+          name: '事件3',
+          event: '事件3',
+          region: '龜山區',
+          lat: 24.9874,
+          lng: 121.3018,
+          date: '2024-03-15',
+        },
+        {
+          name: '事件4',
+          event: '事件4',
+          region: '中壢區',
+          lat: 24.9598,
+          lng: 121.2087,
+          date: '2024-03-16',
+        },
+        {
+          name: '事件1',
+          event: '事件1',
+          region: '桃園區',
+          lat: 24.9789,
+          lng: 121.2554,
+          date: '2024-03-17',
+        },
+        {
+          name: '事件2',
+          event: '事件2',
+          region: '龜山區',
+          lat: 24.9932,
+          lng: 121.2741,
+          date: '2024-03-18',
+        },
+        {
+          name: '事件3',
+          event: '事件3',
+          region: '中壢區',
+          lat: 24.9536,
+          lng: 121.2305,
+          date: '2024-03-19',
+        },
+        {
+          name: '事件4',
+          event: '事件4',
+          region: '桃園區',
+          lat: 24.9912,
+          lng: 121.3009,
+          date: '2024-03-20',
+        },
+      ];
+
+      // Initialize map
+      var map = L.map('map', {
+        zoomControl: false, // 關閉 Zoom In 和 Zoom Out 按鈕
+      }).setView([24.9937, 121.2967], 13); // Taoyuan center coordinates
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Function to add markers to map
+      function addMarkers() {
+        // Clear existing markers
+        map.eachLayer(function (layer) {
+          if (layer instanceof L.Marker) {
+            map.removeLayer(layer);
+          }
+        });
+
+        // Filter events based on user selection
+        var filteredEvents = eventsData.filter(function (event) {
+          var regionFilter = document.getElementById('region').value;
+          var eventFilter = document.getElementById('event').value;
+          var startDateFilter = document.getElementById('startDate').value;
+          var endDateFilter = document.getElementById('endDate').value;
+
+          return (
+            (regionFilter === '' || event.region === regionFilter) &&
+            (eventFilter === '' || event.name === eventFilter) &&
+            (startDateFilter === '' || event.date >= startDateFilter) &&
+            (endDateFilter === '' || event.date <= endDateFilter)
+          );
+        });
+
+        // Add markers for filtered events
+        filteredEvents.forEach(function (event) {
+          L.marker([event.lat, event.lng]).addTo(map).bindPopup(event.name);
+        });
+      }
+
+      // Initial markers
+      addMarkers();
+
+      // Event listeners for filtering
+      document.getElementById('region').addEventListener('change', addMarkers);
+      document.getElementById('event').addEventListener('change', addMarkers);
+      document
+        .getElementById('startDate')
+        .addEventListener('change', addMarkers);
+      document.getElementById('endDate').addEventListener('change', addMarkers);
+    </script>
+  </body>
+</html>
