@@ -60,7 +60,11 @@
         <option value="處理完成">處理完成</option>
       </select>
 
-      <label for="date">日期範圍:</label>
+      <label for="date">建立時間:</label>
+      <input type="date" id="startDate" />
+      <input type="date" id="endDate" />
+
+      <label for="date">更新時間:</label>
       <input type="date" id="startDate" />
       <input type="date" id="endDate" />
     </div>
@@ -263,6 +267,7 @@
       }).addTo(map);
 
       // Function to add markers to map
+      // Function to add markers to map
       function addMarkers() {
         // Clear existing markers
         map.eachLayer(function (layer) {
@@ -290,7 +295,28 @@
 
         // Add markers for filtered events
         filteredEvents.forEach(function (event) {
-          L.marker([event.lat, event.lng]).addTo(map).bindPopup(event.name);
+          var marker = L.marker([event.lat, event.lng]).addTo(map);
+          var popupContent =
+            '<div><p>' +
+            event.name +
+            '</p><button id="showImageBtn">紀錄</button></div>';
+          marker.bindPopup(popupContent);
+
+          // Add event listener to the button inside popup
+          marker.on('popupopen', function () {
+            document
+              .getElementById('showImageBtn')
+              .addEventListener('click', function () {
+                // Create a large popup window to display the image
+                var imageUrl = '前台事件紀錄.png'; // 替換為你的圖片 URL
+                var imagePopup = L.popup().setContent(
+                  '<img src="' +
+                    imageUrl +
+                    '" style="width: 400px; height: auto;"/>'
+                ); // 設置圖片寬度為 400px，高度自動調整
+                marker.bindPopup(imagePopup).openPopup();
+              });
+          });
         });
       }
 
