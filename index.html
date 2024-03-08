@@ -52,6 +52,14 @@
         <!-- Add more events as needed -->
       </select>
 
+      <label for="status">處理狀況:</label>
+      <select id="status">
+        <option value="">全部狀況</option>
+        <option value="待處理">待處理</option>
+        <option value="處理中">處理中</option>
+        <option value="處理完成">處理完成</option>
+      </select>
+
       <label for="date">日期範圍:</label>
       <input type="date" id="startDate" />
       <input type="date" id="endDate" />
@@ -247,12 +255,14 @@
         var filteredEvents = eventsData.filter(function (event) {
           var regionFilter = document.getElementById('region').value;
           var eventFilter = document.getElementById('event').value;
+          var statusFilter = document.getElementById('status').value;
           var startDateFilter = document.getElementById('startDate').value;
           var endDateFilter = document.getElementById('endDate').value;
 
           return (
             (regionFilter === '' || event.region === regionFilter) &&
             (eventFilter === '' || event.name === eventFilter) &&
+            (statusFilter === '' || event.status === statusFilter) &&
             (startDateFilter === '' || event.date >= startDateFilter) &&
             (endDateFilter === '' || event.date <= endDateFilter)
           );
@@ -270,6 +280,7 @@
       // Event listeners for filtering
       document.getElementById('region').addEventListener('change', addMarkers);
       document.getElementById('event').addEventListener('change', addMarkers);
+      document.getElementById('status').addEventListener('change', addMarkers);
       document
         .getElementById('startDate')
         .addEventListener('change', addMarkers);
