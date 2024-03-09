@@ -7,7 +7,7 @@
 資料格式範例->假想事件.xlsx
 
 <br>
-使用軟體<br>
-主幹使用chatGPT建立，後續調整使用Claude 
-程式語言<br>
+使用軟體:<br>
+主幹使用chatGPT建立，後續調整使用Claude <br>
+程式語言:<br>
 繁體中文
