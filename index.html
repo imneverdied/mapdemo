@@ -34,22 +34,13 @@
   </head>
   <body>
     <div class="filters">
-      <label for="region">地區:</label>
+      <label for="status">區域:</label>
       <select id="region">
         <option value="">全區</option>
-        <option value="桃園區">桃園區</option>
-        <option value="龜山區">龜山區</option>
-        <option value="中壢區">中壢區</option>
       </select>
-
-      <label for="event">議題:</label>
+      <label for="status">議題:</label>
       <select id="event">
         <option value="">全部議題</option>
-        <option value="議題1">議題1</option>
-        <option value="議題2">議題2</option>
-        <option value="議題3">議題3</option>
-        <option value="議題4">議題4</option>
-        <!-- Add more events as needed -->
       </select>
 
       <label for="status">處理狀況:</label>
@@ -67,271 +58,31 @@
       <label for="date">更新時間:</label>
       <input type="date" id="startDate" />
       <input type="date" id="endDate" />
-      <label> demo事件(建立時間)的時間範圍是3月1日到20日 ，更新時間無範例</label>
+      <button
+        type="button"
+        id="excel"
+        style="
+          position: fixed;
+          top: 0;
+          right: 0;
+          padding: 5px;
+          width: 100px;
+          height: 30px;
+        "
+        onclick="import_from_excel()"
+      >
+        從Excel匯入
+      </button>
+      <br />
+      <label>
+        demo事件(建立時間)的時間範圍是3月1日到20日 ，更新時間無範例</label
+      >
     </div>
 
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-      // Sample events data
-      var eventsData = [
-        {
-          name: '議題1',
-          event: '議題1',
-          region: '桃園區',
-          status: '待處理',
-          lat: 24.9889,
-          lng: 121.3113,
-          date: '2024-03-01',
-        },
-        {
-          name: '議題2',
-          event: '議題2',
-          region: '龜山區',
-          status: '處理中',
-          lat: 24.9933,
-          lng: 121.332,
-          date: '2024-03-02',
-        },
-        {
-          name: '議題3',
-          event: '議題3',
-          region: '中壢區',
-          status: '處理完成',
-          lat: 24.9539,
-          lng: 121.2251,
-          date: '2024-03-03',
-        },
-        {
-          name: '議題4',
-          event: '議題4',
-          region: '桃園區',
-          status: '待處理',
-          lat: 24.9835,
-          lng: 121.3,
-          date: '2024-03-04',
-        },
-        {
-          name: '議題1',
-          event: '議題1',
-          region: '龜山區',
-          status: '處理中',
-          lat: 24.9931,
-          lng: 121.3393,
-          date: '2024-03-05',
-        },
-        {
-          name: '議題2',
-          event: '議題2',
-          region: '中壢區',
-          status: '處理完成',
-          lat: 24.9593,
-          lng: 121.2056,
-          date: '2024-03-06',
-        },
-        {
-          name: '議題3',
-          event: '議題3',
-          region: '桃園區',
-          status: '待處理',
-          lat: 24.9785,
-          lng: 121.2561,
-          date: '2024-03-07',
-        },
-        {
-          name: '議題4',
-          event: '議題4',
-          region: '龜山區',
-          status: '處理中',
-          lat: 24.9975,
-          lng: 121.3389,
-          date: '2024-03-08',
-        },
-        {
-          name: '議題1',
-          event: '議題1',
-          region: '中壢區',
-          status: '處理完成',
-          lat: 24.9534,
-          lng: 121.2311,
-          date: '2024-03-09',
-        },
-        {
-          name: '議題2',
-          event: '議題2',
-          region: '桃園區',
-          status: '待處理',
-          lat: 24.9918,
-          lng: 121.3015,
-          date: '2024-03-10',
-        },
-        {
-          name: '議題3',
-          event: '議題3',
-          region: '桃園區',
-          status: '處理中',
-          lat: 24.9843,
-          lng: 121.3021,
-          date: '2024-03-11',
-        },
-        {
-          name: '議題4',
-          event: '議題4',
-          region: '龜山區',
-          status: '處理完成',
-          lat: 24.9948,
-          lng: 121.3411,
-          date: '2024-03-12',
-        },
-        {
-          name: '議題1',
-          event: '議題1',
-          region: '中壢區',
-          status: '待處理',
-          lat: 24.9578,
-          lng: 121.2269,
-          date: '2024-03-13',
-        },
-        {
-          name: '議題2',
-          event: '議題2',
-          region: '桃園區',
-          status: '處理中',
-          lat: 24.9821,
-          lng: 121.3104,
-          date: '2024-03-14',
-        },
-        {
-          name: '議題3',
-          event: '議題3',
-          region: '龜山區',
-          status: '處理完成',
-          lat: 24.9949,
-          lng: 121.3371,
-          date: '2024-03-15',
-        },
-        {
-          name: '議題4',
-          event: '議題4',
-          region: '中壢區',
-          status: '待處理',
-          lat: 24.9598,
-          lng: 121.2087,
-          date: '2024-03-16',
-        },
-        {
-          name: '議題1',
-          event: '議題1',
-          region: '桃園區',
-          status: '處理中',
-          lat: 24.9789,
-          lng: 121.2554,
-          date: '2024-03-17',
-        },
-        {
-          name: '議題2',
-          event: '議題2',
-          region: '龜山區',
-          status: '處理完成',
-          lat: 24.9911,
-          lng: 121.34,
-          date: '2024-03-18',
-        },
-        {
-          name: '議題3',
-          event: '議題3',
-          region: '中壢區',
-          status: '待處理',
-          lat: 24.9536,
-          lng: 121.2305,
-          date: '2024-03-19',
-        },
-        {
-          name: '議題4',
-          event: '議題4',
-          region: '桃園區',
-          status: '處理中',
-          lat: 24.9912,
-          lng: 121.3009,
-          date: '2024-03-20',
-        },
-      ];
-
-      // Initialize map
-      var map = L.map('map', {
-        zoomControl: false, // 關閉 Zoom In 和 Zoom Out 按鈕
-      }).setView([24.9937, 121.2967], 13); // Taoyuan center coordinates
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-      }).addTo(map);
-
-      // Function to add markers to map
-      // Function to add markers to map
-      function addMarkers() {
-        // Clear existing markers
-        map.eachLayer(function (layer) {
-          if (layer instanceof L.Marker) {
-            map.removeLayer(layer);
-          }
-        });
-
-        // Filter events based on user selection
-        var filteredEvents = eventsData.filter(function (event) {
-          var regionFilter = document.getElementById('region').value;
-          var eventFilter = document.getElementById('event').value;
-          var statusFilter = document.getElementById('status').value;
-          var startDateFilter = document.getElementById('startDate').value;
-          var endDateFilter = document.getElementById('endDate').value;
-
-          return (
-            (regionFilter === '' || event.region === regionFilter) &&
-            (eventFilter === '' || event.name === eventFilter) &&
-            (statusFilter === '' || event.status === statusFilter) &&
-            (startDateFilter === '' || event.date >= startDateFilter) &&
-            (endDateFilter === '' || event.date <= endDateFilter)
-          );
-        });
-
-        // Add markers for filtered events
-        filteredEvents.forEach(function (event) {
-          var marker = L.marker([event.lat, event.lng]).addTo(map);
-          var popupContent =
-            '<div><p>' +
-            event.name +
-            '</p><button id="showImageBtn">紀錄</button></div>';
-          marker.bindPopup(popupContent);
-
-          // Add event listener to the button inside popup
-          marker.on('popupopen', function () {
-            document
-              .getElementById('showImageBtn')
-              .addEventListener('click', function () {
-                // Create a large popup window to display the image
-                var imageUrl = '前台事件紀錄.png'; // 替換為你的圖片 URL
-                var imagePopup = L.popup().setContent(
-                  '<img src="' +
-                    imageUrl +
-                    '" style="width: 800px; height: auto;"/>'
-                ); // 設置圖片寬度為 800px，高度自動調整
-                marker.bindPopup(imagePopup).openPopup();
-              });
-          });
-        });
-      }
-
-      // Initial markers
-      addMarkers();
-
-      // Event listeners for filtering
-      document.getElementById('region').addEventListener('change', addMarkers);
-      document.getElementById('event').addEventListener('change', addMarkers);
-      document.getElementById('status').addEventListener('change', addMarkers);
-      document
-        .getElementById('startDate')
-        .addEventListener('change', addMarkers);
-      document.getElementById('endDate').addEventListener('change', addMarkers);
-    </script>
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
   </body>
 </html>
