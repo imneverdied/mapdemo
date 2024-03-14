@@ -124,7 +124,30 @@ function addMarkers() {
 
   // Add markers for filtered events
   filteredEvents.forEach(function (event) {
-    var marker = L.marker([event.lat, event.lng]).addTo(map);
+    var markerColor;
+    switch (event.status) {
+      case '待處理':
+        markerColor = 'red';
+        break;
+      case '處理中':
+        markerColor = 'yellow';
+        break;
+      case '處理完成':
+        markerColor = 'blue';
+        break;
+      default:
+        markerColor = 'blue'; // 預設顏色為藍色
+    }
+
+    var marker = L.marker([event.lat, event.lng], {
+      icon: L.icon({
+        iconUrl: `https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-${markerColor}.png`,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [0, -41], // 調整彈出視窗的位置
+      }),
+    }).addTo(map);
+
     var popupContent = '<div><p>' + event.name + '</br>' + event.status;
     ('</p><button id="showImageBtn">紀錄</button></div>');
     marker.bindPopup(popupContent);
